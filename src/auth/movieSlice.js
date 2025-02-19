@@ -1,25 +1,26 @@
-import { createSlice } from '@reduxjs/toolkit';
+import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  movies: {
-        title:"",
-         year:"",
-         poster:"",
-        link:""
-  }
+    movies: {
+        title: "",
+        year: "",
+        
+        link: ""
+    }
 };
 
 export const movieSlice = createSlice({
-  name: "movieauth",
-  initialState,
-  reducers: {
-    login: (state, action) => {
-      state.movies = { ...state.movies, ...action.payload };
-    },
-  },
+    name: "movie",
+    initialState,
+    reducers: {
+        updateMovies: (state, action) => {
+            state.movies = { ...state.movies, ...action.payload };
+        }
+    }
 });
 
-export const { login } = authSlice.actions;
-export const movieauth = (state) => state.movieauth.movies;
+export const { updateMovies } = movieSlice.actions;
+export const selectMovies = (state) => state.movie.movies;
 
-export default authSlice.reducer;
+export default movieSlice.reducer;
+

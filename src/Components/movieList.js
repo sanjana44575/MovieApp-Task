@@ -1,21 +1,26 @@
 import React, { useState, useEffect } from "react";
 import { Card, CardContent, Typography, Avatar, Button } from "@mui/material";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchMovies } from "../Thunk/authThunk";
 
 const MoviesList = () => {
-  const [movies, setMovies] = useState([]);
-  const [expandedUserId, setExpandedUserId] = useState(null);
+  const dispatch = useDispatch();
+  const movies = useSelector((state) => state.api.movies);
+  const isLoading = useSelector((state) => state.api.isLoading);
+  const isError = useSelector((state) => state.api.isError);
+  const [expandedMovieId, setExpandedMovieId] = useState(null);
 
   useEffect(() => {
-    fetch("http://localhost:3000/movies")
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Failed to fetch data");
-        }
-        return response.json();
-      })
-      .then((data) => setMovies(data))
-      .catch((error) => console.error("Error fetching movies:", error));
-  }, []);
+    dispatch(fetchMovies());
+  }, [dispatch]);
+
+  if (isLoading) {
+    return <div>Loading movies...</div>;
+  }
+
+  if (isError) {
+    return <div>Error loading movies!</div>;
+  }
 
   return (
     <div
@@ -43,11 +48,11 @@ const MoviesList = () => {
               width: "100px",
               height: "100px",
               marginRight: "16px",
-             borderRadius: "0px",
+              borderRadius: "0px",
             }}
           />
           <CardContent style={{ flexGrow: 1 }}>
-            {expandedUserId === movie.id ? (
+            {expandedMovieId === movie.id ? (
               <>
                 <Typography variant="h6" component="div" fontWeight="bold">
                   Movie Details:
@@ -64,7 +69,7 @@ const MoviesList = () => {
                 />
                 <Button
                   variant="outlined"
-                  onClick={() => setExpandedUserId(null)}
+                  onClick={() => setExpandedMovieId(null)}
                   style={{ marginTop: "10px" }}
                 >
                   Hide Poster
@@ -80,7 +85,7 @@ const MoviesList = () => {
                 </Typography>
                 <Button
                   variant="outlined"
-                  onClick={() => setExpandedUserId(movie.id)}
+                  onClick={() => setExpandedMovieId(movie.id)}
                   style={{ marginTop: "10px" }}
                 >
                   Show Poster
@@ -94,4 +99,4 @@ const MoviesList = () => {
   );
 };
 
-export default MoviesList;
+export default MoviesList;

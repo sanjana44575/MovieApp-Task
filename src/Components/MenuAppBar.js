@@ -18,11 +18,11 @@ import { useNavigate } from 'react-router-dom';
 
 export default function MenuAppBar() {
  const Navigate=useNavigate()
-  const [auth, setAuth] = React.useState(true);
+  const [app, setApp] = React.useState(true);
   const [anchorEl, setAnchorEl] = React.useState(null);
 
   const handleChange = (event) => {
-    setAuth(event.target.checked);
+    setApp(event.target.checked);
   };
 
   const handleMenu = (event) => {
@@ -39,18 +39,18 @@ export default function MenuAppBar() {
 
   return (
     <Box sx={{ flexGrow: 1 }}>
-      {/* <FormGroup>
+      <FormGroup>
         <FormControlLabel
           control={
             <Switch
-              checked={auth}
+              checked={app}
               onChange={handleChange}
               aria-label="login switch"
             />
           }
-          label={auth ? 'Logout' : 'Login'}
+          label={app ? 'Logout' : 'Login'}
         />
-      </FormGroup> */}
+      </FormGroup>
       <AppBar position="static">
         <Toolbar>
           <IconButton
@@ -65,7 +65,7 @@ export default function MenuAppBar() {
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             WEB
           </Typography>
-          {auth && (
+          {app && (
             <div>
                 <IconButton
                 size="large"

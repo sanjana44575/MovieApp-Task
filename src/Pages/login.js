@@ -1,56 +1,40 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-// import { useSelector } from 'react-redux';
-import {  login } from '../auth/authSlice';
+import { login } from '../auth/authSlice';
 import { useDispatch } from 'react-redux';
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
-  const dispatch=useDispatch()
-  
-//   const userMatch = useSelector(auth); 
-
-  const handleSubmit =async(e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    
-    const response = await fetch("http://localhost:3000/users")
-    const value = await response.json();
-    const currUser = value.find((user) => user.email === email)
+    try {
+      const response = await fetch("http://localhost:3000/users");
+      const users = await response.json();
+      const currUser = users.find((user) => user.email === email);
 
-    if(!currUser){
-      alert('there is no such user!!')
-      return;
-    }
+      if (!currUser) {
+        alert('There is no such user!');
+        return;
+      }
 
-    // if ( email === currUser.email && password === currUser.password)
-    // {
-    //   const response = await fetch("http://localhost:3000/movies") 
-    //   const locations= await response.json()
-    //   const NewLocation=locations.filter((location)=>location.userId===currUser.id)
-    //   currUser.locations=NewLocation;
-    // }
-    // console.log(currUser)
-    // console.log(NewLocation)
-    
-    dispatch(login(currUser))
-    localStorage.setItem("currUser",JSON.stringify(currUser))
-    alert('Logged in successfully');
+      if (currUser.password !== password) {
+        alert('Incorrect password!');
+        return;
+      }
+
+      dispatch(login(currUser));
+      localStorage.setItem("currUser", JSON.stringify(currUser));
+      alert('Logged in successfully');
       navigate('/dashboard');
-    
-   
-   
-
-    // if (userMatch.email === email && userMatch.password === password) {
-    //   alert('Logged in successfully');
-    //   navigate('/dashboard');
-    // } else {
-    //   alert('Invalid email or password');
-    // }
+    } catch  {
+      
+      alert("An error occurred during login. Please try again.");
+    }
   };
-
 
   return (
     <div className="container">

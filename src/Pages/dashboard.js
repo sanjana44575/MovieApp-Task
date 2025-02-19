@@ -1,34 +1,29 @@
 import React, { useEffect, useState } from "react";
 import { Card, CardContent, Typography, Button, TextField, Avatar } from "@mui/material";
 import MenuAppBar from "../Components/MenuAppBar"
-
+import { useDispatch, useSelector } from "react-redux";
+import { fetchMovies } from "../Thunk/authThunk";
 const Dashboard = () => {
   const key = JSON.parse(localStorage.getItem("currUser"));
  
+  const dispatch = useDispatch();
+  const allMovies = useSelector((state) => state.api.movies);
+
+
+  const movies = allMovies.filter((movie) => movie.userid === key.id)
 
   const [title, setTitle] = useState("");
   const [year, setYear] = useState("");
   const [link, setLink] = useState("");
-  const [movies, setMovies] = useState([]);
+  // const [movies, setMovies] = useState([]);
   const [editingMovieId, setEditingMovieId] = useState(null);
   const [editTitle, setEditTitle] = useState("");
   const [editYear, setEditYear] = useState("");
 
 
   useEffect(() => {
-    const fetchMovies = async () => {
-      try {
-        const response = await fetch("http://localhost:3000/movies");
-        const data = await response.json();
-        const userMovies = data.filter((movie) => movie.userid === key.id);
-        setMovies(userMovies);
-      } catch (error) {
-        console.error("Error fetching movies:", error);
-      }
-    };
-
-    fetchMovies();
-  }, []);
+    dispatch(fetchMovies());
+  }, [dispatch]);
 
   // Add a new movie
   const addMovie = async (e) => {
@@ -60,11 +55,10 @@ const Dashboard = () => {
 
       await fetch("http://localhost:3000/movies", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newMovie),
+         body: JSON.stringify(newMovie),
       });
 
-      setMovies([...movies, newMovie]);
+      dispatch(fetchMovies());
       setTitle("");
       setYear("");
       setLink("");
@@ -96,11 +90,12 @@ const Dashboard = () => {
 
       await fetch(`http://localhost:3000/movies/${id}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(updatedMovie),
       });
 
-      setMovies(movies.map((movie) => (movie.id === id ? updatedMovie : movie)));
+
+      // setMovies(movies.map((movie) => (movie.id === id ? updatedMovie : movie)));
+      dispatch(fetchMovies());
       setEditingMovieId(null);
     } catch (error) {
       console.error("Error updating movie:", error);
@@ -111,8 +106,13 @@ const Dashboard = () => {
   // Handle Delete Movie
   const handleDelete = async (id) => {
     try {
-      await fetch(`http://localhost:3000/movies/${id}`, { method: "DELETE" });
-      setMovies(movies.filter((movie) => movie.id !== id));
+      await fetch(`http://localhost:3000/movies/${id}`,
+       {
+         method: "DELETE" 
+        });
+        dispatch(fetchMovies());
+      // setMovies(movies.filter((movie) => movie.id !== id));
+      
     } catch (error) {
       console.error("Error deleting movie:", error);
     }
